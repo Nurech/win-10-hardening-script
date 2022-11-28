@@ -18,7 +18,6 @@ In general general `hardening.cmd` is compiled using best practices from officia
 1. We first run `audit.cmd` which will give us feedback in Windows 10 status in `true/false` satemenets. 
 2. We are then presented the option to harden failed audit points or harden everything.
 3. We are then presented to run `audit.cmd` again to confirm proccesses made by `hardening.cmd`.
-4. For user conveneince `audit.cmd` is compiled with together with  `hardening.cmd` into `tool.cmd` though both could be run seperately. 
 
 ## Hardening script
 [https://github.com/Nurech/win-10-hardening-script/blob/master/win-10-hardening-script.cmd](https://github.com/Nurech/win-10-hardening-script/blob/master/hardening.cmd)
@@ -59,6 +58,5 @@ hardening.cmd
      ├─ Uninstall unwanted programs
      ├─ Edge hardening
      ├─ Enable and Configure Google Chrome Internet Browser Settings
-     ├─ Enforce device driver signing
-              
+     ├─ Enforce device driver signing       
 ```
