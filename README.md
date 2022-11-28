@@ -21,8 +21,8 @@ In general general `hardening.cmd` is compiled using best practices from officia
 4. For user conveneince `audit.cmd` is compiled with together with  `hardening.cmd` into `tool.cmd` though both could be run seperately. 
 
 ## Hardening script
-https://github.com/Nurech/win-10-hardening-script/blob/master/win-10-hardening-script.cmd
-Features an executable cmd script which utilizes `powershell` to run actions as
+[https://github.com/Nurech/win-10-hardening-script/blob/master/win-10-hardening-script.cmd](https://github.com/Nurech/win-10-hardening-script/blob/master/hardening.cmd)
+Features an executable cmd script which utilizes `powershell` to run following actions:
 ```
 hardening.cmd
      ├─ Create restore point
