@@ -1,5 +1,7 @@
 # Windows 10 ITC8080 Hardening operating systems and services
 
+Authors: Joosep Parts, Helena Jäe, Karl Tamberg, Artur Niki, Adi ??
+
 The following documentation covers how Windows 10 hardening was achived and have we have audited it to cover 80% most typical cases. More detaild explenation of specific hardening steps are commented inline of script itself.
 
 Target machine is running Windows 10 (more specifically 21H1).
