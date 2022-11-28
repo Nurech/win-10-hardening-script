@@ -1,7 +1,5 @@
 ::###############################################################################################################
-::
-:: Create restore point
-:: The command below creates the restore point.
+:: Create restore point. The command below creates the restore point.
 powershell.exe enable-computerrestore -drive c:\
 powershell.exe vssadmin resize shadowstorage /on=c: /for=c: /maxsize=5000MB
 :: checkpoint-computer -description "beforehardening"
@@ -9,10 +7,12 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" /v Sys
 powershell.exe -ExecutionPolicy Bypass -Command "Checkpoint-Computer -Description 'BeforeSecurityHardening' -RestorePointType 'MODIFY_SETTINGS'"
 ::###############################################################################################################
 ::
+::###############################################################################################################
 :: Block remote commands https://docs.microsoft.com/en-us/windows/win32/com/enabledcom
 reg add HKEY_LOCAL_MACHINE\Software\Microsoft\OLE /v EnableDCOM /t REG_SZ /d N /F
 ::###############################################################################################################
 ::
+::###############################################################################################################
 :: Change file associations to protect against common ransomware and social engineering attacks.
 assoc .bat=txtfile
 :: Not used because of testing the script
@@ -58,12 +58,14 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v DontDisplayNetworkS
 :: Workarround for CoronaBlue/SMBGhost Worm exploiting CVE-2020-0796
 powershell.exe Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" DisableCompression -Type DWORD -Value 1 -Force
 ::###############################################################################################################
-::
+:: 
+::###############################################################################################################
 :: Enable Network protection
 :: Enabled - Users will not be able to access malicious IP addresses and domains
 :: Disable (Default) - The Network protection feature will not work. Users will not be blocked from accessing malicious domains
 :: AuditMode - If a user visits a malicious IP address or domain, an event will be recorded in the Windows event log but the user will not be blocked from visiting the address.
 powershell.exe Set-MpPreference -EnableNetworkProtection Enabled
+::###############################################################################################################
 ::
 ::###############################################################################################################
 :: Enable exploit protection (EMET on Windows 10)
@@ -87,6 +89,7 @@ powershell.exe Set-MpPreference -EnableNetworkProtection Enabled
 powershell.exe Invoke-WebRequest -Uri https://demo.wd.microsoft.com/Content/ProcessMitigation.xml -OutFile ProcessMitigation.xml
 powershell.exe Set-ProcessMitigation -PolicyFilePath ProcessMitigation.xml
 del ProcessMitigation.xml
+::###############################################################################################################
 ::
 ::###############################################################################################################
 :: Windows Defender Device Guard - Application Control Policies (Windows 10 Only)
@@ -159,6 +162,8 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DeviceGuard" /v EnableVirtuali
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DeviceGuard" /v RequirePlatformSecurityFeatures /t REG_DWORD /d 3 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DeviceGuard" /v LsaCfgFlags /t REG_DWORD /d 1 /f
 ::###############################################################################################################
+::
+::###############################################################################################################
 :: Harden all version of MS Office against common malspam attacks
 :: Disables Macros, enables ProtectedView
 :: Extracted via regsnapshot from what Hardentools does
@@ -198,6 +203,8 @@ reg add "HKCU\SOFTWARE\Microsoft\Office\16.0\Word\Security" /v PackagerPrompt /t
 reg add "HKCU\SOFTWARE\Microsoft\Office\16.0\Word\Security" /v VBAWarnings /t REG_DWORD /d 4 /f
 reg add "HKCU\SOFTWARE\Microsoft\Office\16.0\Word\Security" /v AllowDDE /t REG_DWORD /d 0 /f
 reg add "HKCU\SOFTWARE\Microsoft\Office\Common\Security" /v DisableAllActiveX /t REG_DWORD /d 1 /f
+::###############################################################################################################
+::
 ::###############################################################################################################
 :: General OS hardening
 :: Disable DNS Multicast, NTLM, SMBv1, NetBIOS over TCP/IP, PowerShellV2, AutoRun, 8.3 names, Last Access timestamp and weak TLS/SSL ciphers and protocols
@@ -387,6 +394,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v DisableRestrictedAdminOut
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest" /v UseLogonCredential /t REG_DWORD /d 0 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest" /v Negotiate /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\CredentialsDelegation" /v AllowProtectedCreds /t REG_DWORD /d 1 /f
+::#######################################################################
 ::
 ::#######################################################################
 :: Disable the ClickOnce trust promp
@@ -396,6 +404,7 @@ reg add "HKLM\SOFTWARE\MICROSOFT\.NETFramework\Security\TrustManager\PromptingLe
 reg add "HKLM\SOFTWARE\MICROSOFT\.NETFramework\Security\TrustManager\PromptingLevel" /v Internet /t REG_SZ /d "Disabled" /f
 reg add "HKLM\SOFTWARE\MICROSOFT\.NETFramework\Security\TrustManager\PromptingLevel" /v TrustedSites /t REG_SZ /d "Disabled" /f
 reg add "HKLM\SOFTWARE\MICROSOFT\.NETFramework\Security\TrustManager\PromptingLevel" /v UntrustedSites /t REG_SZ /d "Disabled" /f
+::#######################################################################
 ::
 ::#######################################################################
 :: Enable Windows Firewall and configure some advanced options
@@ -457,34 +466,41 @@ netsh advfirewall firewall add rule name="Block wscript.exe netconns" program="%
 netsh advfirewall firewall add rule name="Block wscript.exe netconns" program="%systemroot%\SysWOW64\wscript.exe" protocol=tcp dir=out enable=yes action=block profile=any
 netsh Advfirewall set allprofiles state on
 ::
+::#######################################################################
 :: Disable TCP timestamps
 netsh int tcp set global timestamps=disabled
+::#######################################################################
 ::
+::#######################################################################
 :: Enable Firewall Logging
-:: ---------------------
 netsh advfirewall set currentprofile logging filename %systemroot%\system32\LogFiles\Firewall\pfirewall.log
 netsh advfirewall set currentprofile logging maxfilesize 4096
 netsh advfirewall set currentprofile logging droppedconnections enable
+::#######################################################################
 ::
+::#######################################################################
 ::Disable AutoRun
-:: ---------------------
 reg add "HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v NoDriveTypeAutoRun /t REG_DWORD /d 0xff /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v NoDriveTypeAutoRun /t REG_DWORD /d 0xff /f
+::#######################################################################
 ::
+::#######################################################################
 ::Show known file extensions and hidden files
-:: ---------------------
 reg add "HKLM\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "HideFileExt" /t REG_DWORD /d 0 /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "HideFileExt" /t REG_DWORD /d 0 /f
 reg add "HKLM\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "Hidden" /t REG_DWORD /d 1 /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "Hidden" /t REG_DWORD /d 1 /f
 reg add "HKLM\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "ShowSuperHidden" /t REG_DWORD /d 1 /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "ShowSuperHidden" /t REG_DWORD /d 1 /f
+::#######################################################################
 ::
+::#######################################################################
 ::Disable 8.3 names (Mitigate Microsoft IIS tilde directory enumeration) and Last Access timestamp for files and folder (Performance)
-:: ---------------------
 fsutil behavior set disable8dot3 1
 fsutil behavior set disablelastaccess 0
+::#######################################################################
 ::
+::#######################################################################
 :: Biometrics
 :: Enable anti-spoofing for facial recognition
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Biometrics\FacialFeatures" /v EnhancedAntiSpoofing /t REG_DWORD /d 1 /f
@@ -494,7 +510,9 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Personalization" /v NoLockScre
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" /v LetAppsActivateWithVoiceAboveLock /t REG_DWORD /d 2 /f
 :: Prevent Windows app voice activation entirely (be mindful of those with accesibility needs)
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" /v LetAppsActivateWithVoice /t REG_DWORD /d 2 /f
+::#######################################################################
 ::
+::#######################################################################
 :: Disable weak TLS/SSL ciphers and protocols
 :: ---------------------
 :: https://www.nartac.com/Products/IISCrypto
@@ -571,20 +589,16 @@ reg add "HKLM\SOFTWARE\Microsoft\.NETFramework\v4.0.30319" /v SystemDefaultTlsVe
 ::
 ::#######################################################################
 :: Enable and Configure Internet Browser Settings
-::#######################################################################
-::
 :: Enable SmartScreen for Edge
 reg add "HKCU\SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter" /v EnabledV9 /t REG_DWORD /d 1 /f
 :: Enable Notifications in IE when a site attempts to install software
 reg add "HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer" /v SafeForScripting /t REG_DWORD /d 0 /f
 :: Disable Edge password manager to encourage use of proper password manager
 reg add "HKCU\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Main" /v "FormSuggest Passwords" /t REG_SZ /d no /f
-::
+::#######################################################################
 ::
 ::#######################################################################
 :: Windows 10 Privacy Settings
-::#######################################################################
-::
 :: Set Windows Analytics to limited enhanced if enhanced is enabled
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection" /v LimitEnhancedDiagnosticDataWindowsAnalytics /t REG_DWORD /d 1 /f
 :: Set Windows Telemetry to security only
@@ -620,24 +634,28 @@ reg add "HKCU\Control Panel\International\User Profile" /v HttpAcceptLanguageOpt
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications" /v NoToastApplicationNotificationOnLockScreen /t REG_DWORD /d 1 /f
 ::
 ::#######################################################################
-:: Enable Advanced Windows Logging
-::#######################################################################
-::
 :: Enlarge Windows Event Security Log Size
 wevtutil sl Security /ms:1024000
 wevtutil sl Application /ms:1024000
 wevtutil sl System /ms:1024000
 wevtutil sl "Windows Powershell" /ms:1024000
 wevtutil sl "Microsoft-Windows-PowerShell/Operational" /ms:1024000
+::#######################################################################
+::
+::#######################################################################
 :: Record command line data in process creation events eventid 4688
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit" /v ProcessCreationIncludeCmdLine_Enabled /t REG_DWORD /d 1 /f
+::#######################################################################
 ::
+::#######################################################################
 :: Enabled Advanced Settings
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v SCENoApplyLegacyAuditPolicy /t REG_DWORD /d 1 /f
 :: Enable PowerShell Logging
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ModuleLogging" /v EnableModuleLogging /t REG_DWORD /d 1 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging" /v EnableScriptBlockLogging /t REG_DWORD /d 1 /f
+::#######################################################################
 ::
+::#######################################################################
 :: Enable Windows Event Detailed Logging
 :: For more extensive Windows logging, I recommend https://www.malwarearchaeology.com/cheat-sheets
 Auditpol /set /subcategory:"Security Group Management" /success:enable /failure:enable
@@ -652,8 +670,10 @@ Auditpol /set /subcategory:"IPsec Driver" /success:enable /failure:enable
 Auditpol /set /subcategory:"Security State Change" /success:enable /failure:enable
 Auditpol /set /subcategory:"Security System Extension" /success:enable /failure:enable
 Auditpol /set /subcategory:"System Integrity" /success:enable /failure:enable
-:: Uninstall pups
-:: ---------------------
+::#######################################################################
+::
+::#######################################################################
+:: Uninstall unwanted programs
 wmic /interactive:off product where "name like 'Ask Part%' and version like'%'" call uninstall
 wmic /interactive:off product where "name like 'searchAssistant%' and version like'%'" call uninstall
 wmic /interactive:off product where "name like 'Weatherbug%' and version like'%'" call uninstall
@@ -764,13 +784,14 @@ reg add "HKLM\Software\Policies\Adobe\Acrobat Reader\DC\FeatureLockDown\cSharePo
 reg add "HKLM\Software\Policies\Adobe\Acrobat Reader\DC\FeatureLockDown\cWebmailProfiles" /v "bDisableWebmail" /t REG_DWORD /d 1 /f
 reg add "HKLM\Software\Policies\Adobe\Acrobat Reader\DC\FeatureLockDown\cWelcomeScreen" /v "bShowWelcomeScreen" /t REG_DWORD /d 0 /f
 reg add "HKLM\Software\Wow6432Node\Adobe\Acrobat Reader\DC\Installer" /v "DisableMaintenance" /t REG_DWORD /d 1 /f
+::#######################################################################
 ::
+::#######################################################################
+:: Edge hardening
 :: Prevent Edge from running in background
 :: If you run enable this policy the background mode will be disabled.
 reg add "HKLM\Software\Policies\Microsoft\Edge" /f
 reg add "HKLM\Software\Policies\Microsoft\Edge"  /v "BackgroundModeEnabled" /t REG_DWORD /d 0 /f
-::
-:: EDGE HARDENING ::
 reg add "HKLM\Software\Policies\Microsoft\Edge" /v "SitePerProcess" /t REG_DWORD /d "0x00000001" /f
 reg add "HKLM\Software\Policies\Microsoft\Edge" /v "SSLVersionMin" /t REG_SZ /d "tls1.2^@" /f
 reg add "HKLM\Software\Policies\Microsoft\Edge" /v "NativeMessagingUserLevelHosts" /t REG_DWORD /d "0" /f
@@ -783,11 +804,10 @@ reg add "HKLM\Software\Policies\Microsoft\Edge" /v "AllowDeletingBrowserHistory"
 reg add "HKLM\Software\Policies\Microsoft\Edge\ExtensionInstallAllowlist\1" /t REG_SZ /d "odfafepnkmbhccpbejgmiehpchacaeak" /f
 reg add "HKLM\Software\Policies\Microsoft\Edge\ExtensionInstallForcelist\1" /t REG_SZ /d "odfafepnkmbhccpbejgmiehpchacaeak" /f
 reg add "HKEY_LOCAL_MACHINE\Software\Wow6432Node\Microsoft\Edge\Extensions\odfafepnkmbhccpbejgmiehpchacaeak" /v "update_url" /t REG_SZ /d "https://edge.microsoft.com/extensionwebstorebase/v1/crx" /f
+::#######################################################################
 ::
 ::#######################################################################
 :: Enable and Configure Google Chrome Internet Browser Settings
-::#######################################################################
-::
 reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "AllowCrossOriginAuthPrompt" /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "AlwaysOpenPdfExternally" /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "AmbientAuthenticationInPrivateModesEnabled" /t REG_DWORD /d 0 /f
@@ -798,10 +818,7 @@ reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "ScreenCaptureAllowed" /t REG_
 reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "SitePerProcess" /t REG_DWORD /d 1 /f
 reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "TLS13HardeningForLocalAnchorsEnabled" /t REG_DWORD /d 1 /f
 reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "VideoCaptureAllowed" /t REG_DWORD /d 1 /f
-::
-:: #####################################################################
 :: Chrome hardening settings
-:: #####################################################################
 reg add "HKLM\Software\Policies\Google\Chrome" /v "AdvancedProtectionAllowed" /t REG_DWORD /d "1" /f
 reg add "HKLM\Software\Policies\Google\Chrome" /v "RemoteAccessHostFirewallTraversal" /t REG_DWORD /d "0" /f
 reg add "HKLM\Software\Policies\Google\Chrome" /v "DefaultPopupsSetting" /t REG_DWORD /d "33554432" /f
@@ -839,5 +856,9 @@ reg add "HKLM\Software\Policies\Google\Chrome\ExtensionInstallForcelist" /v "1" 
 reg add "HKLM\Software\Policies\Google\Chrome\URLBlacklist" /v "1" /t REG_SZ /d "javascript://*" /f
 reg add "HKLM\Software\Policies\Google\Update" /v "AutoUpdateCheckPeriodMinutes" /t REG_DWORD /d "1613168640" /f
 reg add "HKLM\Software\Policies\Google\Chrome\Recommended" /v "SafeBrowsingProtectionLevel" /t REG_DWORD /d "2" /f
+::#######################################################################
+::
+::#######################################################################
 :: Enforce device driver signing
 BCDEDIT /set nointegritychecks OFF
+::#######################################################################
