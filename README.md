@@ -24,39 +24,40 @@ In general general `hardening.cmd` is compiled using best practices from officia
 Features an executable cmd script that utilizes `PowerShell` to run the following actions:
 ```
 hardening.cmd
-     ├─ 1. Create a restore point
-     ├─ 2. File associations
-     ├─ 3. Enable Network protection
-     ├─ 4. Enable exploit protection     
-     ├─ 5. Windows Defender
-     │   └─ Updates signatures
-     │   └─ Setup periodic scanning
-     │   └─ Windows Defender Application Guard
-     ├─ Harden MS Office
-     │   └─ Word, Excel, Powerpoint  
-     ├─ General OS hardening
-     │   └─ Enforce the Administrator role on common attack points       
-     │   └─ Prevent Kerberos from using DES or RC4    
-     │   └─ TCPIP parameters    
-     │   └─ Shared access (LSA)
-     │   └─ Group Policy
-     │   └─ Enable SMB/LDAP Signing
-     │   └─ Enforce NTLMv2 and LM authentication
-     │   └─ Disable script.exe, DLL Hijacking, IPv6, WinRM Service, NetBIOS, AutoRun
-     │   └─ Windows Update Settings
-     │   └─ Windows Remote Access Settings 
-     ├─ Harden lsass to help protect against credential dumping
-     ├─ Disable the ClickOnce trust prompt
-     ├─ Enable Windows Firewall and configure some advanced options + logging
-     ├─ Biometrics
-     ├─ Disable weak TLS/SSL ciphers and protocols
-     ├─ Enable and Configure Internet Browser Settings
-     ├─ Windows 10 Privacy Settings
-     │   └─ Disable location data, Windows GameDVR, consumer experience       
-     ├─ Enlarge Windows Event Security Log Size
-     ├─ Enable Windows Event Detailed Logging
-     ├─ Uninstall unwanted programs
-     ├─ Edge hardening
-     ├─ Enable and Configure Google Chrome Internet Browser Settings
-     ├─ Enforce device driver signing       
+     ├─ 1 Create a restore point
+     │   └─ 1_1 Block remote commands
+     ├─ 2 File associations
+     ├─ 3 Enable Network protection
+     ├─ 4 Enable exploit protection     
+     ├─ 5 Windows Defender
+     │   └─ 5_1 Updates signatures
+     │   └─ 5_2 Setup periodic scanning
+     │   └─ 5_3 Windows Defender Application Guard
+     ├─ 6 Harden MS Office
+     │   └─ 6_1 Word, Excel, Powerpoint  
+     ├─ 7 General OS hardening
+     │   └─ 7_1 Enforce the Administrator role on common attack points       
+     │   └─ 7_2 Prevent Kerberos from using DES or RC4    
+     │   └─ 7_3 TCPIP parameters    
+     │   └─ 7_4 Shared access (LSA)
+     │   └─ 7_5 Group Policy
+     │   └─ 7_6 Enable SMB/LDAP Signing
+     │   └─ 7_7 Enforce NTLMv2 and LM authentication
+     │   └─ 7_8 Disable script.exe, DLL Hijacking, IPv6, WinRM Service, NetBIOS, AutoRun
+     │   └─ 7_9 Windows Update Settings
+     │   └─ 7_10 Windows Remote Access Settings 
+     ├─ 8 Harden lsass to help protect against credential dumping
+     ├─ 9 Disable the ClickOnce trust prompt
+     ├─ 10 Enable Windows Firewall and configure some advanced options + logging
+     ├─ 11 Biometrics
+     ├─ 12 Disable weak TLS/SSL ciphers and protocols
+     ├─ 13 Enable and Configure Internet Browser Settings
+     ├─ 14 Windows 10 Privacy Settings
+     │   └─ 14_1 Disable location data, Windows GameDVR, consumer experience       
+     ├─ 15 Enlarge Windows Event Security Log Size
+     ├─ 16 Enable Windows Event Detailed Logging
+     ├─ 17 Uninstall unwanted programs
+     ├─ 18 Edge hardening
+     ├─ 19 Enable and Configure Google Chrome Internet Browser Settings
+     ├─ 20 Enforce device driver signing       
 ```
