@@ -15,20 +15,20 @@ In general general `hardening.cmd` is compiled using best practices from officia
 4. [CIS Critical Security Controls v7.1 Microsoft Windows 10 Cyber Hygiene Guide](https://www.cisecurity.org/insights/white-papers/cis-controls-microsoft-windows-10-cyber-hygiene-guide) - CIS.
 
 ## Order of actions
-1. We first run `audit.cmd`, giving us feedback on Windows 10 status in `true/false statements. 
-2. We are then presented with the option to harden failed audit points or harden everything.
-3. We are then presented to run `audit.cmd` again to confirm the processes made by `hardening.cmd`.
+1. We first run `audit.ps1`, giving us feedback on Windows 10 status in `true/false statements. 
+2. We can then select option to harden audited points.
+3. We afterwards we can then run `audit.cmd` again to confirm the processes made by `hardening.cmd`.
 
 ## Hardening script
 [https://github.com/Nurech/win-10-hardening-script/blob/master/win-10-hardening-script.cmd](https://github.com/Nurech/win-10-hardening-script/blob/master/hardening.cmd)
 Features an executable cmd script that utilizes `PowerShell` to run the following actions:
 ```
 hardening.cmd
-     ├─ Create a restore point
-     ├─ File associations
-     ├─ Enable Network protection
-     ├─ Enable exploit protection     
-     ├─ Windows Defender
+     ├─ 1. Create a restore point
+     ├─ 2. File associations
+     ├─ 3. Enable Network protection
+     ├─ 4. Enable exploit protection     
+     ├─ 5. Windows Defender
      │   └─ Updates signatures
      │   └─ Setup periodic scanning
      │   └─ Windows Defender Application Guard
