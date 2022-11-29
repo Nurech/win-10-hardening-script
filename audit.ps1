@@ -1,4 +1,40 @@
+
 $1_1 = Test-Path HKEY_LOCAL_MACHINE\Software\Microsoft\OLE
+
+
+function initialize-audit {
+    
+    clear-host
+    sleep 1 
+    write-host "[+] ----->  PowerShell v$PSVersion`n" 
+    Check-Administrative-Privilege
+}
+
+function Check-Administrative-Privilege() {
+    <#This function checks If the script can run with administrative privilege#>
+
+    Write-Host "[?] Checking for administrative privileges ..`n"
+
+    $isAdmin = ([System.Security.Principal.WindowsPrincipal][System.Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)
+    
+    If ($isAdmin) {
+	
+        Write-Host "[+] ----->  Administrator`n"
+            
+    } Else {
+
+        Write-Host "[-] Some of the operations need administrative privileges.`n"
+            
+        Write-Host "[*] Please run the script using an administrative account."
+
+	    exit 
+
+    }
+
+}
+
+initialize-audit
+
 
 echo "###############################################################################################################"
 echo ""
