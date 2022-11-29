@@ -1,5 +1,8 @@
+:: Adds powershell to path
+set PATH=%PATH%;%SystemRoot%\SysWOW64\WindowsPowerShell\v1.0
+::
 ::###############################################################################################################
-:: Create restore point. The command below creates the restore point.
+:: [1] Create restore point. The command below creates the restore point.
 powershell.exe enable-computerrestore -drive c:\
 powershell.exe vssadmin resize shadowstorage /on=c: /for=c: /maxsize=5000MB
 :: checkpoint-computer -description "beforehardening"
@@ -8,12 +11,12 @@ powershell.exe -ExecutionPolicy Bypass -Command "Checkpoint-Computer -Descriptio
 ::###############################################################################################################
 ::
 ::###############################################################################################################
-:: Block remote commands https://docs.microsoft.com/en-us/windows/win32/com/enabledcom
+::[1_1] Block remote commands https://docs.microsoft.com/en-us/windows/win32/com/enabledcom
 reg add HKEY_LOCAL_MACHINE\Software\Microsoft\OLE /v EnableDCOM /t REG_SZ /d N /F
 ::###############################################################################################################
 ::
 ::###############################################################################################################
-:: Change file associations to protect against common ransomware and social engineering attacks.
+:: [2] Change file associations to protect against common ransomware and social engineering attacks.
 assoc .bat=txtfile
 :: Not used because of testing the script
 :: assoc .cmd=txtfile
