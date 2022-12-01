@@ -33,7 +33,6 @@ hardening.cmd
      │   └─ 5_1 Potentially Unwanted Applications
      │   └─ 5_2 Windows Defender Application Guard
      ├─ 6 Harden MS Office
-     │   └─ 6_1 Word, Excel, Powerpoint  
      ├─ 7 General OS hardening
      │   └─ 7_1 Enforce the Administrator role on common attack points       
      │   └─ 7_2 Prevent Kerberos from using DES or RC4    
