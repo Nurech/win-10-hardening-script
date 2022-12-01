@@ -1,6 +1,7 @@
-
 $1_1 = Test-Path HKEY_LOCAL_MACHINE\Software\Microsoft\OLE
-
+$2 = "False"
+$3 = "False"
+$4 = "False"
 
 function initialize-audit {
     
@@ -8,6 +9,8 @@ function initialize-audit {
     sleep 1 
     write-host "[+] ----->  PowerShell v$PSVersion`n" 
     checkAdministrativePrivilege
+    testEnableNetworkprotection
+    testEnableExploitProtection
 }
 
 function checkAdministrativePrivilege() {
@@ -23,9 +26,35 @@ function checkAdministrativePrivilege() {
     }
 }
 
+function testEnableNetworkprotection() {
+    $res = Get-MpPreference | Select-Object -Property EnableNetworkProtection
+    If($res.EnableNetworkProtection -eq "0") {
+        Write-Host "Enable Network Protection is 0"
+        $script:3 = "False"
+    }
+    ElseIf($res.EnableNetworkProtection -eq "1") {
+        Write-Host "Enable Network Protection is 1"
+        $script:3 = "True"
+    }
+
+}
+
+function testEnableExploitProtection() {
+    $res = Get-ProcessMitigation | Select-Object PolicyFilePath
+    If($res.PolicyFilePath -eq $null) {
+        Write-Host "Enable Exploit Protection is null"
+        $script:4 = "False"
+    }
+    ElseIf($res.PolicyFilePath -eq "1") {
+        Write-Host "Enable Exploit Protection is not null"
+        $script:4 = "True"
+    }
+
+}
+
 initialize-audit
 
-
+echo ""
 echo "###############################################################################################################"
 echo ""
 echo "Starting audit"
@@ -34,9 +63,9 @@ echo "##########################################################################
 echo ""
 echo "├─ 1 [no test] Create a restore point"
 echo "│   └─ [$1_1] Block remote commands"
-echo "├─ 2 [] File associations"
-echo "├─ 3 [] Enable Network protection"
-echo "├─ 4 [] Enable exploit protection"
+echo "├─ 2 [$2] File associations"
+echo "├─ 3 [$3] Enable Network Protection"
+echo "├─ 4 [$4] Enable Exploit Protection"
 echo "├─ 5 [] Windows Defender"
 echo "│   └─ 5_1 [] Updates signatures"
 echo "│   └─ 5_2 [] Setup periodic scanning"
