@@ -1,7 +1,10 @@
-$1_1 = Test-Path HKEY_LOCAL_MACHINE\Software\Microsoft\OLE
+$1_1 = "False"
 $2 = "False"
 $3 = "False"
 $4 = "False"
+$5 = "False"
+$PUAProtection = "False"
+$DeviceGuard = "False"
 
 function initialize-audit {
     
@@ -9,8 +12,11 @@ function initialize-audit {
     sleep 1 
     write-host "[+] ----->  PowerShell v$PSVersion`n" 
     checkAdministrativePrivilege
+    testBlockRemoteCommands
+    testFileAssociations
     testEnableNetworkprotection
     testEnableExploitProtection
+    testWindowsDefender
 }
 
 function checkAdministrativePrivilege() {
@@ -23,6 +29,24 @@ function checkAdministrativePrivilege() {
         Write-Host "[-] Some of the operations need administrative privileges.`n"            
         Write-Host "[*] Please run the script using an administrative account."
 	    exit 
+    }
+}
+
+function testBlockRemoteCommands() {
+    $script:1_1 = Test-Path HKEY_LOCAL_MACHINE\Software\Microsoft\OLE
+}
+
+function testFileAssociations() {
+    $res = cmd.exe /c "assoc .bat"
+    $res1 = cmd.exe /c "assoc .chm"
+    $res2 = cmd.exe /c "assoc .hta"
+    Write-Host $res
+    If ($res -like "*txtfile*" -And $res1 -like "*txtfile*" -And $res2 -like "*txtfile*") {
+        Write-Host "All extensions good"
+        $script:2 = "True"
+    } Else {
+        Write-Host "Some extensions bad"
+        $script:2 = "False"
     }
 }
 
@@ -45,9 +69,37 @@ function testEnableExploitProtection() {
         Write-Host "Enable Exploit Protection is null"
         $script:4 = "False"
     }
-    ElseIf($res.PolicyFilePath -eq "1") {
+    ElseIf($res.PolicyFilePath -ne $null) {
         Write-Host "Enable Exploit Protection is not null"
         $script:4 = "True"
+    }
+
+}
+
+function testWindowsDefender() {
+    $res = Get-MpPreference | Select-Object PUAProtection
+    $res1 = Get-MpPreference | Select-Object AttackSurfaceReductionRules_Actions
+
+
+    If($res.PUAProtection -eq "0" -And $res1.AttackSurfaceReductionRules_Actions -eq $null) {
+        Write-Host "Windows Defender is 0"
+        $script:PUAProtection = "False"
+    }
+    ElseIf($res.PUAProtection -eq "1" -And $res1.AttackSurfaceReductionRules_Actions -ne $null) {
+        Write-Host "Windows Defender is 1"
+        $script:PUAProtection  = "True"
+    }
+
+    $res2 = Get-ItemPropertyValue -Path 'HKLM\SOFTWARE\Policies\Microsoft\Windows\DeviceGuard\' -Name EnableVirtualizationBasedSecurity 
+
+    If ($res2 -eq "1") {
+        $script:DeviceGuard = "True"
+    } Else {
+        $script:DeviceGuard = "False"
+    }
+
+    If ($PUAProtection -eq "True" -And $DeviceGuard -eq "True") {
+        $script:5 = "True"
     }
 
 }
@@ -62,14 +114,13 @@ echo ""
 echo "###############################################################################################################"
 echo ""
 echo "├─ 1 [no test] Create a restore point"
-echo "│   └─ [$1_1] Block remote commands"
-echo "├─ 2 [$2] File associations"
+echo "│   └─ [$1_1] Block Remote Commands"
+echo "├─ 2 [$2] File Associations"
 echo "├─ 3 [$3] Enable Network Protection"
 echo "├─ 4 [$4] Enable Exploit Protection"
-echo "├─ 5 [] Windows Defender"
-echo "│   └─ 5_1 [] Updates signatures"
-echo "│   └─ 5_2 [] Setup periodic scanning"
-echo "│   └─ 5_3 [] Windows Defender Application Guard"
+echo "├─ 5 [$5] Windows Defender"
+echo "│   └─ 5_1 [$PUAProtection] Potentially Unwanted Applications"
+echo "│   └─ 5_2 [$DeviceGuard] Windows Defender Application Guard"
 echo "├─ 6 [] Harden MS Office"
 echo "│   └─ 6_1 [] Word, Excel, Powerpoint"
 echo "├─ 7 [] General OS hardening"
