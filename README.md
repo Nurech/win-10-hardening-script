@@ -30,9 +30,8 @@ hardening.cmd
      ├─ 3 Enable Network protection
      ├─ 4 Enable exploit protection     
      ├─ 5 Windows Defender
-     │   └─ 5_1 Updates signatures
-     │   └─ 5_2 Setup periodic scanning
-     │   └─ 5_3 Windows Defender Application Guard
+     │   └─ 5_1 Potentially Unwanted Applications
+     │   └─ 5_2 Windows Defender Application Guard
      ├─ 6 Harden MS Office
      │   └─ 6_1 Word, Excel, Powerpoint  
      ├─ 7 General OS hardening
