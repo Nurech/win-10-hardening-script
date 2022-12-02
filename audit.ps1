@@ -17,6 +17,21 @@ $7_7 = "False"
 $7_8 = "False"
 $7_9 = "False"
 $7_10 = "False"
+$8 = "False"
+$9 = "False"
+$10 = "False"
+$11 = "False"
+$12 = "False"
+$13 = "False"
+$14 = "False"
+$14_1 = "False"
+$15 = "False"
+$16 = "False"
+$17 = "False"
+$18 = "False"
+$19 = "False"
+$20 = "False"
+
 
 function initialize-audit {
 
@@ -31,6 +46,20 @@ function initialize-audit {
     testWindowsDefender
     testHardenMSOffice
     testGeneralOSHardening
+    testHardenlsass
+    testDisabletheClickOnce
+    testBiometrics
+    testDisableweakTLS
+    testInternetBrowserSettings
+    testWindows10Privacy
+    testDisablelocationdata
+    testEnlargeWindowsEvent
+    testEnableWindowsEvent
+    testDetailedLogging
+    testUninstallunwantedprograms
+    testEdgehardening
+    testConfigureGoogleChrome
+    testEnforcedevicedriver
 }
 
 function checkAdministrativePrivilege() {
@@ -118,7 +147,7 @@ function testWindowsDefender() {
 }
 
 function testHardenMSOffice() {
-    $res = Get-ItemPropertyValue -Path 'HKCU:\SOFTWARE\Microsoft\Office\Common\Security' -Name DisableAllActiveX
+    $res = Get-ItemPropertyValue -Path 'HKCU:SOFTWARE\Microsoft\Office\Common\Security' -Name DisableAllActiveX
     If ($res -eq "1") {
         $script:6 = "True"
     } Else {
@@ -202,6 +231,134 @@ function testGeneralOSHardening() {
     }
 }
 
+function testHardenlsass() {
+    $res = Get-ItemPropertyValue -Path 'HKLM:SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\LSASS.exe' -Name AuditLevel
+    If ($res -eq "00000008") {
+        $script:8 = "True"
+    } Else {
+        $script:8 = "False"
+    }
+}
+
+function testDisabletheClickOnce() {
+    $res = Get-ItemPropertyValue -Path 'HKLM:SOFTWARE\MICROSOFT\.NETFramework\Security\TrustManager\PromptingLevel' -Name MyComputer
+    If ($res -eq "Disabled") {
+        $script:9 = "True"
+    } Else {
+        $script:9 = "False"
+    }
+}
+
+function testEnableWindowsFirewall() {
+    $res = Get-NetFirewallRule | Where-Object -Property Name -EQ 'Block appvlp.exe netconns'
+    If ($res.Enabled -eq "True") {
+        $script:10 = "True"
+    } Else {
+        $script:10 = "False"
+    }
+}
+
+function testBiometrics() {
+    $res = Get-ItemPropertyValue -Path 'HKLM:SOFTWARE\Policies\Microsoft\Biometrics\FacialFeatures' -Name EnhancedAntiSpoofing
+    If ($res -eq "1") {
+        $script:11 = "True"
+    } Else {
+        $script:11 = "False"
+    }
+}
+
+function testDisableweakTLS() {
+    $res = Get-ItemPropertyValue -Path 'HKLM:SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\AES 128/128' -Name Enabled
+    If ($res -eq "0xffffffff") {
+        $script:12 = "True"
+    } Else {
+        $script:12 = "False"
+    }
+}
+
+function testInternetBrowserSettings() {
+    $res = Get-ItemPropertyValue -Path 'HKCU:SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter' -Name EnabledV9
+    If ($res -eq "1") {
+        $script:13 = "True"
+    } Else {
+        $script:13 = "False"
+    }
+}
+
+function testWindows10Privacy() {
+    $res = Get-ItemPropertyValue -Path 'HKLM:SOFTWARE\Policies\Microsoft\Windows\DataCollection' -Name LimitEnhancedDiagnosticDataWindowsAnalytics
+    If ($res -eq "1") {
+        $script:14 = "True"
+    } Else {
+        $script:14 = "False"
+    }
+}
+
+function testDisablelocationdata() {
+    $res = Get-ItemPropertyValue -Path 'HKCU:SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore' -Name Location
+    If ($res -eq "Deny") {
+        $script:14_1 = "True"
+    } Else {
+        $script:14_1 = "False"
+    }
+}
+
+
+function testEnlargeWindowsEvent() {
+    $res = get-eventlog -list -ComputerName $env:computername| Where-Object {$_.Log -eq 'Security' }| select Log, MaximumKilobytes, @{n="Server";e={$env:computername}}
+    If ($res.MaximumKilobytes -eq "1024000") {
+        $script:15 = "True"
+    } Else {
+        $script:15 = "False"
+    }
+}
+
+
+function testDetailedLogging() {
+    $res = auditpol /get /subcategory:"Security Group Management"
+    If ($res -like "*Security Group Management*" -And $res -like "*Success*") {
+        $script:16 = "True"
+    } Else {
+        $script:16 = "False"
+    }
+}
+
+function testUninstallunwantedprograms() {
+    $res = powershell.exe -command "Get-AppxProvisionedPackage -Online | Where-Object {$_.DisplayName -eq 'Microsoft.BingWeather'}
+    $res1 = powershell.exe -command "Get-AppxProvisionedPackage -Online | Where-Object {$_.DisplayName -eq 'Microsoft.XboxApp'}
+    If ($res -eq $null -And $res1 -eq $null) {
+        $script:17 = "True"
+    } Else {
+        $script:17 = "False"
+    }
+}
+
+function testEdgehardening() {
+    $res = Get-ItemPropertyValue -Path 'HKLM:Software\Policies\Microsoft\Edge' -Name BackgroundModeEnabled
+    If ($res -eq "0") {
+        $script:18 = "True"
+    } Else {
+        $script:18 = "False"
+    }
+}
+
+function testConfigureGoogleChrome() {
+    $res = Get-ItemPropertyValue -Path 'HKLM:SOFTWARE\Policies\Google\Chrome' -Name AllowCrossOriginAuthPrompt
+    If ($res -eq "0") {
+        $script:19 = "True"
+    } Else {
+        $script:19 = "False"
+    }
+}
+
+function testEnforcedevicedriver() {
+    $res = Bcdedit.exe | findstr "systemroot"
+    If ($res -like "*OFF*") {
+        $script:20 = "True"
+    } Else {
+        $script:20 = "False"
+    }
+}
 
 initialize-audit
 
@@ -232,19 +389,19 @@ echo "│   └─ 7_7 [$7_7] Enforce NTLMv2 and LM authentication"
 echo "│   └─ 7_8 [$7_8] Disable script.exe, DLL Hijacking, IPv6, WinRM Service, NetBIOS, AutoRun"
 echo "│   └─ 7_9 [$7_9] Windows Update Settings"
 echo "│   └─ 7_10 [$7_10] Windows Remote Access Settings"
-echo "├─ 8 [] Harden lsass to help protect against credential dumping"
-echo "├─ 9 [] Disable the ClickOnce trust prompt"
-echo "├─ 10 [] Enable Windows Firewall and configure some advanced options + logging"
-echo "├─ 11 [] Biometrics"
-echo "├─ 12 [] Disable weak TLS/SSL ciphers and protocols"
-echo "├─ 13 [] Enable and Configure Internet Browser Settings"
-echo "├─ 14 [] Windows 10 Privacy Settings"
-echo "│   └─ 14_1 [] Disable location data, Windows GameDVR, consumer experience"
-echo "├─ 15 [] Enlarge Windows Event Security Log Size"
-echo "├─ 16 [] Enable Windows Event Detailed Logging"
-echo "├─ 17 [] Uninstall unwanted programs"
-echo "├─ 18 [] Edge hardening"
-echo "├─ 19 [] Enable and Configure Google Chrome Internet Browser Settings"
-echo "├─ 20 [] Enforce device driver signing"
+echo "├─ 8 [$8] Harden lsass to help protect against credential dumping"
+echo "├─ 9 [$9] Disable the ClickOnce trust prompt"
+echo "├─ 10 [$10] Enable Windows Firewall and configure some advanced options + logging"
+echo "├─ 11 [$11] Biometrics"
+echo "├─ 12 [$12] Disable weak TLS/SSL ciphers and protocols"
+echo "├─ 13 [$13] Enable and Configure Internet Browser Settings"
+echo "├─ 14 [$14] Windows 10 Privacy Settings"
+echo "│   └─ 14_1 [$14_1] Disable location data, Windows GameDVR, consumer experience"
+echo "├─ 15 [$15] Enlarge Windows Event Security Log Size"
+echo "├─ 16 [$16] Enable Windows Event Detailed Logging"
+echo "├─ 17 [$17] Uninstall unwanted programs"
+echo "├─ 18 [$18] Edge hardening"
+echo "├─ 19 [$19] Enable and Configure Google Chrome Internet Browser Settings"
+echo "├─ 20 [$20] Enforce device driver signing"
 echo ""
 pause
