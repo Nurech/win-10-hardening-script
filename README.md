@@ -59,7 +59,7 @@ hardening.cmd
      ├─ 19 Enable and Configure Google Chrome Internet Browser Settings
      ├─ 20 Enforce device driver signing       
 ```
-#Audit.ps1#
+##Audit.ps1
 Example result:
 ```
 ###############################################################################################################
