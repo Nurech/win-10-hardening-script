@@ -59,3 +59,47 @@ hardening.cmd
      ├─ 19 Enable and Configure Google Chrome Internet Browser Settings
      ├─ 20 Enforce device driver signing       
 ```
+#Audit.ps1#
+Example result:
+```
+###############################################################################################################
+
+Starting audit
+
+###############################################################################################################
+
+├─ 1 [no test] Create a restore point
+│   └─ [False] Block Remote Commands
+├─ 2 [False] File Associations
+├─ 3 [False] Enable Network Protection
+├─ 4 [False] Enable Exploit Protection
+├─ 5 [False] Windows Defender
+│   └─ 5_1 [False] Potentially Unwanted Applications
+│   └─ 5_2 [False] Windows Defender Application Guard
+├─ 6 [True] Harden MS Office
+├─ 7 [False] General OS Hardening
+│   └─ 7_1 [False] Enforce the Administrator role on common attack points
+│   └─ 7_2 [True] Prevent Kerberos from using DES or RC4
+│   └─ 7_3 [True] TCPIP parameters
+│   └─ 7_4 [False] Shared access (LSA)
+│   └─ 7_5 [False] Group Policy
+│   └─ 7_6 [False] Enable SMB/LDAP Signing
+│   └─ 7_7 [False] Enforce NTLMv2 and LM authentication
+│   └─ 7_8 [False] Disable script.exe, DLL Hijacking, IPv6, WinRM Service, NetBIOS, AutoRun
+│   └─ 7_9 [False] Windows Update Settings
+│   └─ 7_10 [True] Windows Remote Access Settings
+├─ 8 [False] Harden lsass to help protect against credential dumping
+├─ 9 [True] Disable the ClickOnce trust prompt
+├─ 10 [False] Enable Windows Firewall and configure some advanced options + logging
+├─ 11 [False] Biometrics
+├─ 12 [False] Disable weak TLS/SSL ciphers and protocols
+├─ 13 [False] Enable and Configure Internet Browser Settings
+├─ 14 [True] Windows 10 Privacy Settings
+│   └─ 14_1 [False] Disable location data, Windows GameDVR, consumer experience
+├─ 15 [False] Enlarge Windows Event Security Log Size
+├─ 16 [True] Enable Windows Event Detailed Logging
+├─ 17 [True] Uninstall unwanted programs
+├─ 18 [False] Edge hardening
+├─ 19 [False] Enable and Configure Google Chrome Internet Browser Settings
+├─ 20 [False] Enforce device driver signing
+```
